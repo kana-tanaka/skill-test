@@ -1,4 +1,4 @@
-package com.example.api;
+package com.example.api.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
