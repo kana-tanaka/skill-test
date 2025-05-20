@@ -43,6 +43,6 @@ public class TodoServiceImpl implements TodoService {
 
 
     public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+        return todoRepository.findAllByOrderByCreatedAtAsc();
     }
 }
