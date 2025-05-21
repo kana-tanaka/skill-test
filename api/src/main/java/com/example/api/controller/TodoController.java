@@ -36,12 +36,19 @@ public class TodoController {
     @Autowired TodoService todoService;
 
     @GetMapping
-    public List<TodoGetResponse> getTodoList()
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<List<TodoGetResponse>> getTodoList()
     {
-        return todoService.getAllTodos()
+        try {
+            List<TodoGetResponse> todos = todoService.getAllTodos()
                 .stream()
                 .map(todo -> new TodoGetResponse(todo.getId(), todo.getTitle(), todo.getCompleted()))
                 .toList();
+            return ResponseEntity.ok(todos);
+        } catch (DataAccessException e) {
+            logger.error("error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping
@@ -50,7 +57,10 @@ public class TodoController {
     {
         try {
             Todo todo = todoService.createTodo(request);
-            return ResponseEntity.ok(new TodoIdResponse(todo.getId()));
+            return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new TodoIdResponse(todo.getId()));   
+            // return ResponseEntity.ok(new TodoIdResponse(todo.getId()));
         } catch (DataAccessException e) {
             logger.error("error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -79,7 +89,7 @@ public class TodoController {
     {
         try {
             todoService.deleteTodo(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             logger.error("error", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
