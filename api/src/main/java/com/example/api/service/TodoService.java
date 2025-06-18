@@ -10,5 +10,5 @@ public interface TodoService {
     Todo createTodo(TodoPostRequest todoPostRequest);
     Todo updateTodo(Long id, TodoPutRequest todoPutRequest);
     void deleteTodo(Long id);
-    List<Todo> getAllTodos();
+    List<Todo> getAllTodos(Long id);
 }

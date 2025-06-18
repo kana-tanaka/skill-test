@@ -9,5 +9,5 @@ import com.example.api.entity.Todo;
 
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findAllByOrderByCreatedAtAsc();
+    List<Todo> findAllByCategoryIdOrderByCreatedAtAsc(Long categoryId);
 }

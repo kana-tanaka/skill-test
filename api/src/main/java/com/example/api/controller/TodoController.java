@@ -35,12 +35,12 @@ public class TodoController {
     private static final Logger logger = LoggerFactory.getLogger(TodoController.class);
     @Autowired TodoService todoService;
 
-    @GetMapping
+    @GetMapping("/{id}")
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<List<TodoGetResponse>> getTodoList()
+    public ResponseEntity<List<TodoGetResponse>> getTodo(@PathVariable Long id)
     {
         try {
-            List<TodoGetResponse> todos = todoService.getAllTodos()
+            List<TodoGetResponse> todos = todoService.getAllTodos(id)
                 .stream()
                 .map(todo -> new TodoGetResponse(todo.getId(), todo.getTitle(), todo.getCompleted()))
                 .toList();

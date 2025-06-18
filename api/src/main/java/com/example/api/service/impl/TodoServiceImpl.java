@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.example.api.dto.request.TodoPostRequest;
 import com.example.api.dto.request.TodoPutRequest;
+import com.example.api.entity.Category;
 import com.example.api.entity.Todo;
+import com.example.api.repository.CategoryRepository;
 import com.example.api.repository.TodoRepository;
+import com.example.api.service.CategoryService;
 import com.example.api.service.TodoService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -17,11 +20,15 @@ import jakarta.persistence.EntityNotFoundException;
 public class TodoServiceImpl implements TodoService {
     // 実体クラスはspring bootが勝手に作るらしい。こわ。
     @Autowired TodoRepository todoRepository;
+    @Autowired CategoryRepository categoryRepository;
 
     @Override
     public Todo createTodo(TodoPostRequest todoPostRequest) {
+        Category category = categoryRepository.findById(todoPostRequest.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
         Todo todo = new Todo();
         todo.setTitle(todoPostRequest.getTitle());
+        todo.setCategory(category);
         return todoRepository.save(todo);
     }
 
@@ -42,7 +49,9 @@ public class TodoServiceImpl implements TodoService {
     }
 
 
-    public List<Todo> getAllTodos() {
-        return todoRepository.findAllByOrderByCreatedAtAsc();
+    public List<Todo> getAllTodos(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+        return todoRepository.findAllByCategoryIdOrderByCreatedAtAsc(category.getId());
     }
 }
